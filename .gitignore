@@ -1,3 +1,4 @@
 **/initrd.gz
 **/linux
-distro/freebsd/*/*.iso
+**\.iso
+tftp/bootmenu/menu.cfg

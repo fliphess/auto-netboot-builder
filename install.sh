@@ -9,19 +9,9 @@ fi
 # CHANGE THIS:
 BASE_URL="https://host.fliphess.com/baseinstall"
 
-# {{{ - Log function
-function log() {
-  echo -e "\t >>> $1"
-} # }}}
+function log() { echo -e "\t >>> $1"; } 
+function setup_tftp() { DIR="${1}"; ( cd "$DIR" && ./setup ); }
 
-#{{{ - Setup tftp directory for distro
-function setup_tftp() {
-  DIR="${1}"
-  ( cd "$DIR" && ./setup ) 
-} # }}}
-
-
-# {{{ - Create header page for menu.cfg bootmenu config
 function create_netboot_menu_header() {
   FILE="$1"
   cat << EOF > $FILE
@@ -31,10 +21,8 @@ prompt 0
 timeout 300
 ontimeout sda
 EOF
-} # }}}
+}
 
-
-# {{{ - Create bootmenu listing for distro in menu.cfg according to template
 function create_entry_for_distro() {
   FILE="$1"
   DISTRO="$2" 
@@ -57,7 +45,7 @@ EOF
     eval echo "$line" >> $FILE
   done < $CONFIG_TEMPLATE
 
-} # }}}
+}
 
 
 function main() {
@@ -80,9 +68,9 @@ function main() {
         #setup_tftp "tftp/distro/$DISTRO"  
     done
 
-      echo -e "\n#########################################"
-      echo -e "###    All done!"
-      echo -e "#########################################\n"
+    echo -e "\n#########################################"
+    echo -e "###    All done!"
+    echo -e "#########################################\n"
 }
 
 main
