@@ -1,0 +1,77 @@
+#!/bin/bash -x
+PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+TIMESTAMP="$(date '+%Y%m%dB')"
+MIRROR="http://nl-mirror.eurid.eu/debian"
+
+# Functions 
+
+if [ -z "." ] || [ ! -d "." ]; then 
+    echo "Usage $0 <DESTINATION>"
+    exit 0;
+fi
+
+# Functions 
+
+function die() { echo -e "Error in $0: $1\n" ; exit 1; }
+function pack() { cd $1 ; find . | cpio --create --format='newc' | gzip -9  > "$2/initrd.gz"; }
+function unpack() { cd $1; cat $2 | gzip -d | cpio --extract --preserve --verbose ; }
+
+function main() {
+    for DISTRO in squeeze wheezy
+    do 
+        echo "Preparing for $DISTRO"
+        for ARCH in i386 amd64
+        do
+            echo "Setting up $ARCH"
+
+            if [ ! -d "./$DISTRO/$ARCH" ] ; then 
+                mkdir -p "./$DISTRO/$ARCH" || die "Failed to create ./$DISTRO/$ARCH"
+            fi 
+        
+            echo "Backing up current kernel and initrd.gz"
+            for FILE in linux initrd.gz
+            do
+               if [ -f "./$DISTRO/$ARCH/$FILE" ] ; then 
+                    mv "./$DISTRO/$ARCH/$FILE" "./$DISTRO/$ARCH/$FILE.$TIMESTAMP"
+                fi
+            done
+
+            echo "Creating tmp dir"
+            TMP="$( mktemp -d )"
+            mkdir -p $TMP/initrd ; cd $TMP || die "Failed to create temp dir ./tmp/initrd"
+
+            echo "Getting current initrd and kernel from ftp.nl.debian.org"
+            wget -O "$TMP/initrd.gz" "$MIRROR/dists/$DISTRO/main/installer-$ARCH/current/images/netboot/debian-installer/$ARCH/initrd.gz" || die "Failed to download the new kernel"
+            wget -O "$TMP/linux"     "$MIRROR/dists/$DISTRO/main/installer-$ARCH/current/images/netboot/debian-installer/$ARCH/linux"     || die "Failed to download the new kernel!"
+
+            echo "Unpacking initrd"
+            unpack "$TMP/initrd" "$TMP/initrd.gz"
+
+            echo "Getting the latest bnx2 firmware"
+            L="$( curl "$MIRROR/pool/non-free/f/firmware-nonfree/" 2>&1 | grep -E "firmware-nonfree.*$DISTRO.*\.tar\.gz" | awk -F "href=" '{print $2}' | awk -F '"' '{print $2}' )"
+            echo "LATEST IS $L"
+            wget -O "$TMP/firmware.tgz" "$MIRROR/pool/non-free/f/firmware-nonfree/$L" || die "Failed to get $LATEST latest firmware from ftp.nl.debian.org"
+
+            echo "Unpacking the bnx2 firmware in place"
+            mkdir "$TMP/tmp" ; cd "$TMP/tmp" || die "Does not compute mkdir fail"
+            tar xzf "$TMP/firmware.tgz"      || die "Failed to unpack firmware"
+
+            echo "Putting firmware in place"
+            mkdir -p "$TMP/initrd/lib/firmware/" || die "Failed to create $TMP/initrd/lib/firmware"
+            cp -Rav $TMP/tmp/firmware-nonfree/bnx2/bnx2* $TMP/initrd/lib/firmware/
+    
+            echo "Copying kernel"
+            cp -v "$TMP/linux" "./$DISTRO/$ARCH"
+
+            echo "Building new initrd.gz"
+            pack "$TMP/initrd" "./$DISTRO/$ARCH"
+
+            echo "Removing tmp dir $TMP"
+            rm -rf "$TMP"
+            echo "Done! copied to ./$DISTRO/$ARCH/initrd.gz"
+        done
+    done
+
+}
+
+main

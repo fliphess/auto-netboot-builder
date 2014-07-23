@@ -1,0 +1,3 @@
+#!/bin/bash
+wget -O freebsd_i386.iso  http://mfsbsd.vx.sk/files/iso/10/i386/mfsbsd-se-10.0-RELEASE-i386.iso
+wget -O freebsd_amd64.iso http://mfsbsd.vx.sk/files/iso/10/amd64/mfsbsd-se-10.0-RELEASE-amd64.iso

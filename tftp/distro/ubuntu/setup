@@ -1,0 +1,28 @@
+#!/bin/bash
+PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+TIMESTAMP="$(date '+%Y%m%dB')"
+MIRROR="http://archive.ubuntu.com/ubuntu/dists/"
+
+function die() { echo -e "Error in $0: $1\n" ; exit 1; }
+
+function main() {
+  for DISTRO in lucid precise quantal raring saucy trusty
+  do 
+    for ARCH in i386 amd64
+    do
+      echo "Preparing for $DISTRO"
+      if [ ! -d "./$DISTRO/$ARCH" ] ; then 
+        mkdir -p "./$DISTRO/$ARCH" || die "Failed to create ./$DISTRO/$ARCH"
+      fi 
+      for FILE in linux initrd.gz    
+      do
+        if [ -f "./$DISTRO/$ARCH/$FILE" ] ; then 
+          mv "./$DISTRO/$ARCH/$FILE" "./$DISTRO/$ARCH/$FILE.$TIMESTAMP"
+        fi
+        wget -O "./$DISTRO/$ARCH/$FILE"       "$MIRROR/$DISTRO/main/installer-$ARCH/current/images/netboot/ubuntu-installer/$ARCH/$FILE" || die "Failed to download $FILE for $DISTRO $ARCH"
+      done
+    done
+  done
+}
+
+main
