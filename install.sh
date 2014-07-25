@@ -65,7 +65,7 @@ function main() {
         create_entry_for_distro "$MENU_FILE" "$DISTRO"
 
         log "setup tftp root for distro $DISTRO"
-        #setup_tftp "tftp/distro/$DISTRO"  
+        setup_tftp "tftp/distro/$DISTRO"  
     done
 
     echo -e "\n#########################################"
