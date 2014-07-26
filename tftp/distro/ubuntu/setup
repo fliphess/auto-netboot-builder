@@ -6,7 +6,7 @@ MIRROR="http://archive.ubuntu.com/ubuntu/dists/"
 function die() { echo -e "Error in $0: $1\n" ; exit 1; }
 
 function main() {
-  for DISTRO in lucid precise quantal raring saucy trusty
+  for DISTRO in lucid precise saucy trusty utopic
   do 
     for ARCH in i386 amd64
     do
