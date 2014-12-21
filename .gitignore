@@ -1,4 +1,4 @@
-**/initrd.gz
-**/linux
+**initrd.gz
+**linux
 **\.iso
 tftp/bootmenu/menu.cfg

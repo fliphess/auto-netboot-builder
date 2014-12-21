@@ -9,7 +9,7 @@ fi
 # CHANGE THIS:
 BASE_URL="https://host.fliphess.com/baseinstall"
 
-function log() { echo -e "\t >>> $1"; } 
+function log() { echo -e ">>> $1"; } 
 function setup_tftp() { DIR="${1}"; ( cd "$DIR" && ./setup ); }
 
 function create_netboot_menu_header() {

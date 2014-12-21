@@ -90,6 +90,18 @@ label trusty64
   kernel distro/ubuntu/trusty/amd64/linux
   append ks=$BASE_URL/config/ks.cfg vga=normal initrd=distro/ubuntu/trusty/amd64/initrd.gz ramdisk_size=16432 root=/dev/rd/0 rw  --
 
+label utopic32
+  menu label [^Utopic Unicorn i386] 14.10 i386 installer regular
+  menu indent 1
+  kernel distro/ubuntu/utopic/i386/linux
+  append ks=$BASE_URL/config/ks.cfg vga=normal initrd=distro/ubuntu/utopic/i386/initrd.gz ramdisk_size=16432 root=/dev/rd/0 rw  --
+
+label utopic_unicorn64
+  menu label [^Utopic Unicorn amd64] 14.10 amd64 installer regular
+  menu indent 1
+  kernel distro/ubuntu/utopic/amd64/linux
+  append ks=$BASE_URL/config/ks.cfg vga=normal initrd=distro/ubuntu/utopic/amd64/initrd.gz ramdisk_size=16432 root=/dev/rd/0 rw  --
+
 label - 
   menu label  
   menu disable 
