@@ -7,12 +7,13 @@ if [ "$0" != './install.sh' ]; then
 fi
 
 # CHANGE THIS:
-BASE_URL="https://host.fliphess.com/baseinstall"
+BASE_URL="https:///baseinstall"
 
 function log() { echo -e ">>> $1"; } 
 function setup_tftp() { DIR="${1}"; ( cd "$DIR" && ./setup ); }
 
 function create_netboot_menu_header() {
+    # {{{ - Create defaults in netboot menu file
   FILE="$1"
   cat << EOF > $FILE
 UI bootmenu/menu.c32
@@ -21,9 +22,10 @@ prompt 0
 timeout 300
 ontimeout sda
 EOF
-}
+} # }}}
 
 function create_entry_for_distro() {
+  # {{{ - Create bootmenu entry for distro
   FILE="$1"
   DISTRO="$2" 
   CONFIG_TEMPLATE="tftp/distro/$DISTRO/${DISTRO}.boot"
@@ -45,10 +47,11 @@ EOF
     eval echo "$line" >> $FILE
   done < $CONFIG_TEMPLATE
 
-}
-
+} # }}}
 
 function main() {
+    # {{{ - The main routine
+
     MENU_FILE="tftp/bootmenu/menu.cfg"
     echo "Creating header page for bootmenu"
     create_netboot_menu_header "$MENU_FILE"
@@ -71,7 +74,7 @@ function main() {
     echo -e "\n#########################################"
     echo -e "###    All done!"
     echo -e "#########################################\n"
-}
+} # }}}
 
 main
 
