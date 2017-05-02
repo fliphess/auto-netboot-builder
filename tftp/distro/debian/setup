@@ -1,33 +1,33 @@
-#!/bin/bash 
+#!/bin/bash
 PATH='/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
 TIMESTAMP="$(date '+%Y%m%dB')"
-MIRROR="http://nl-mirror.eurid.eu/debian"
+MIRROR="http://ftp.nl.debian.org/debian"
 DIRNAME=$( pwd -P )
 
-# Functions 
+# Functions
 
-if [ -z "." ] || [ ! -d "." ]; then 
+if [ -z "." ] || [ ! -d "." ]; then
     echo "Usage $0 <DESTINATION>"
     exit 0;
 fi
 
-# Functions 
+# Functions
 
 function die() { echo -e "Error in $0: $1\n" ; exit 1; }
 function pack() { cd $1 ; find . | cpio --create --format='newc' | gzip -9  > "$2/initrd.gz"; }
 function unpack() { cd $1; cat $2 | gzip -d | cpio --extract --preserve --verbose ; }
 
 function main() {
-    for DISTRO in jessie wheezy squeeze; do
+    for DISTRO in jessie stretch buster; do
         echo "Preparing for $DISTRO"
-        for ARCH in "i386" "amd64"; do 
+        for ARCH in "i386" "amd64"; do
 
             echo "Preparing for $DISTRO"
             if [ ! -d "$DIRNAME/$DISTRO/$ARCH" ] ; then
                 mkdir -p "$DIRNAME/$DISTRO/$ARCH" || die "Failed to create $DIRNAME/$DISTRO/$ARCH"
             fi
-        
-            for FILE in linux initrd.gz ; do 
+
+            for FILE in linux initrd.gz ; do
                 if [ -f "$DIRNAME/$DISTRO/$ARCH/$FILE" ] ; then
                     mv "$DIRNAME/$DISTRO/$ARCH/$FILE" "$DIRNAME/$DISTRO/$ARCH/$FILE.$TIMESTAMP"
                 fi
